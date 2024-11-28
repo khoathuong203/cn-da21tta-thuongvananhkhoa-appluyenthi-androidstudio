@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".MainActivity"
+    android:background="@color/white">
+
+    <!-- Tiêu đề -->
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_marginTop="40dp"
+        android:textColor="@color/black"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:text="Trắc Nghiệm Ôn Thi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <!-- Giới thiệu cấu trúc đề thi -->
+    <TextView
+        android:id="@+id/tv_exam_structure_title"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:text="Cấu trúc đề thi:"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tv_exam_structure_content"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:lineSpacingExtra="4dp"
+        android:text="• Số câu hỏi: 40\n• Thời gian mỗi câu: 60 giây/câu\n• Nội dung gồm 6 phần:\n  1. Hiểu biết về công nghệ thông tin cơ bản\n  2. Sử dụng máy tính cơ bản\n  3. Xử lý văn bản cơ bản\n  4. Sử dụng bảng tính cơ bản\n  5. Sử dụng trình chiếu cơ bản\n  6. Sử dụng Internet cơ bản."
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <!-- Nút Bắt đầu -->
+    <Button
+        android:id="@+id/btn_start_exam"
+        android:layout_marginTop="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/black"
+        android:text="Bắt đầu"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+</LinearLayout>
