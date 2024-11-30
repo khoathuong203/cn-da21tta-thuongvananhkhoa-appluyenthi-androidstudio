@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center"
+    android:background="#FFFFFF">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/tv_menu_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Menu Chính"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="40dp"
+        android:textColor="#000000" />
+
+    <!-- Ôn tập Button -->
+    <Button
+        android:id="@+id/btn_ontap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ôn tập"
+        android:layout_marginBottom="20dp"
+        android:textSize="18sp"
+        android:backgroundTint="@android:color/holo_blue_light"
+        android:padding="10dp" />
+
+    <!-- Xem lịch sử Button -->
+    <Button
+        android:id="@+id/btn_xemlichsu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Xem lịch sử"
+        android:layout_marginBottom="20dp"
+        android:textSize="18sp"
+        android:backgroundTint="@android:color/holo_green_light"
+        android:padding="10dp" />
+
+    <!-- Đăng xuất Button -->
+    <Button
+        android:id="@+id/btn_dangxuat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Đăng xuất"
+        android:textSize="18sp"
+        android:backgroundTint="@android:color/holo_red_light"
+        android:padding="10dp" />
+
+</LinearLayout>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="#FFFFFF"
+    android:gravity="center"
+    tools:context=".MainActivity">
+
+    <!-- Header Section -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp">
+
+        <!-- Question Number -->
+        <TextView
+            android:id="@+id/tv_question_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Câu hỏi 1/40"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_weight="1"
+            android:gravity="start" />
+
+        <!-- Score -->
+        <TextView
+            android:id="@+id/tv_score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Điểm: 0"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_weight="1"
+            android:gravity="end" />
+    </LinearLayout>
+
+    <!-- Question Content -->
+    <TextView
+        android:id="@+id/tv_question_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Câu hỏi sẽ xuất hiện ở đây"
+        android:textSize="20sp"
+        android:textAlignment="center"
+        android:textColor="#000000"
+        android:layout_marginBottom="20dp" />
+
+    <!-- Answer Choices -->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Answer Choice 1 -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_answer1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
+
+            <TextView
+                android:id="@+id/tv_answer1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lựa chọn 1"
+                android:textSize="18sp"
+                android:padding="12dp"
+                android:textColor="#000000" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- Answer Choice 2 -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_answer2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
+
+            <TextView
+                android:id="@+id/tv_answer2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lựa chọn 2"
+                android:textSize="18sp"
+                android:padding="12dp"
+                android:textColor="#000000" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- Answer Choice 3 -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_answer3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
+
+            <TextView
+                android:id="@+id/tv_answer3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lựa chọn 3"
+                android:textSize="18sp"
+                android:padding="12dp"
+                android:textColor="#000000" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- Answer Choice 4 -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_answer4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
+
+            <TextView
+                android:id="@+id/tv_answer4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lựa chọn 4"
+                android:textSize="18sp"
+                android:padding="12dp"
+                android:textColor="#000000" />
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+
+    <!-- Countdown Timer -->
+    <TextView
+        android:id="@+id/tv_timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="60s"
+        android:textSize="24sp"
+        android:textColor="@android:color/holo_red_dark"
+        android:layout_marginBottom="20dp" />
+
+    <!-- Next Button -->
+    <Button
+        android:id="@+id/btn_next_question"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tiếp tục"
+        android:textSize="18sp"
+        android:layout_marginTop="20dp" />
+</LinearLayout>
