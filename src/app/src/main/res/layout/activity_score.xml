@@ -34,7 +34,7 @@
         android:id="@+id/btn_play_again"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Chơi lại"
+        android:text="Làm lại"
         android:textSize="18sp"
         android:layout_marginBottom="15dp"
         android:padding="10dp"

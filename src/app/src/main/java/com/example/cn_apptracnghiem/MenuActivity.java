@@ -29,7 +29,7 @@ public class MenuActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-/*
+
         // Xử lý sự kiện nút Xem lịch sử
         btnXemlichsu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,7 +49,7 @@ public class MenuActivity extends AppCompatActivity {
                 finish(); // Kết thúc Activity hiện tại
             }
         });
-*/
+
 
     }
 }

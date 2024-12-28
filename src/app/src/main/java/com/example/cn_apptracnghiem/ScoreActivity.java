@@ -1,6 +1,7 @@
 package com.example.cn_apptracnghiem;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -8,25 +9,40 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class ScoreActivity extends AppCompatActivity {
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
+public class ScoreActivity extends AppCompatActivity {
     private TextView tvFinalScore;
     private Button btnPlayAgain, btnBackMainMenu;
+    private Database db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_score);
 
+        // Khởi tạo Database
+        db = new Database(this);
+
         // Ánh xạ các thành phần giao diện
         tvFinalScore = findViewById(R.id.tv_final_score);
         btnPlayAgain = findViewById(R.id.btn_play_again);
         btnBackMainMenu = findViewById(R.id.btn_back_main_menu);
 
-        // Nhận điểm số từ Intent
+        // Nhận điểm số và user_id từ Intent
         Intent intent = getIntent();
         int score = intent.getIntExtra("SCORE", 0);
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        int userId = sharedPreferences.getInt("USER_ID", -1); // Nhận user_id từ Intent
+
         tvFinalScore.setText("Điểm: " + score);
+
+        // Lưu điểm vào bảng lịch sử
+        if (userId != -1) {  // Kiểm tra nếu userId hợp lệ
+            saveScoreToHistory(userId, score);
+        }
 
         // Sự kiện nút "Chơi lại"
         btnPlayAgain.setOnClickListener(v -> {
@@ -43,5 +59,19 @@ public class ScoreActivity extends AppCompatActivity {
             startActivity(mainMenuIntent);
             finish();
         });
+    }
+
+    // Hàm lưu điểm vào bảng lịch sử
+    private void saveScoreToHistory(int userId, int score) {
+        String date = getCurrentDate(); // Hàm lấy ngày hiện tại
+
+        // Lưu điểm vào bảng lịch sử
+        db.insertHistory(userId, score, date);
+    }
+
+    // Hàm lấy ngày hiện tại
+    private String getCurrentDate() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        return sdf.format(new Date());
     }
 }

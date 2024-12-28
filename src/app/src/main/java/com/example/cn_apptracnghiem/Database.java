@@ -10,6 +10,7 @@ import android.os.Build;
 
 import androidx.annotation.Nullable;
 
+import com.example.cn_apptracnghiem.model.LichSu;
 import com.example.cn_apptracnghiem.model.cauhoi;
 
 import java.util.ArrayList;
@@ -42,6 +43,20 @@ public class Database extends SQLiteOpenHelper {
                 Table.QuestionsTable.phanloai+" INTEGER"
                 +")";
         db.execSQL(QUESTION_TABLE);
+        final String USER_TABLE = "CREATE TABLE nguoidung(" +
+                "user_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "username TEXT UNIQUE," +
+                "password TEXT)";
+        db.execSQL(USER_TABLE);
+        final String HISTORY_TABLE = "CREATE TABLE lichsu (" +
+                "id_his INTEGER PRIMARY KEY AUTOINCREMENT, " +  // Sửa tên cột thành id_his
+                "user_id INTEGER, " +
+                "ngaythuchien TEXT, " +
+                "diem INTEGER, " +
+                "FOREIGN KEY(user_id) REFERENCES nguoidung(user_id)" +
+                ")";
+
+        db.execSQL(HISTORY_TABLE);
         valueQues();
     }
 
@@ -49,6 +64,8 @@ public class Database extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
         db.execSQL("DROP TABLE IF EXISTS "+Table.QuestionsTable.TableName);
+        db.execSQL("DROP TABLE IF EXISTS nguoidung");
+        db.execSQL("DROP TABLE IF EXISTS lichsu");
         onCreate(db);
     }
 
@@ -65,6 +82,40 @@ public class Database extends SQLiteOpenHelper {
 
         db.insert(Table.QuestionsTable.TableName,null,values);
     }
+
+    public ArrayList<LichSu> getUserHistory(int userId) {
+        ArrayList<LichSu> historyList = new ArrayList<>();
+        db = getReadableDatabase();
+
+        // Câu truy vấn đúng
+        String query = "SELECT * FROM lichsu WHERE user_id = ? ORDER BY ngaythuchien DESC";
+        Cursor c = db.rawQuery(query, new String[]{String.valueOf(userId)});
+
+        if (c.moveToFirst()) {
+            do {
+                // Kiểm tra cột trước khi truy xuất giá trị
+                int colHisId = c.getColumnIndex("id_his");  // Đảm bảo đúng tên cột
+                int colUserId = c.getColumnIndex("user_id");
+                int colNgayThucHien = c.getColumnIndex("ngaythuchien");
+                int colDiem = c.getColumnIndex("diem");
+
+                // Kiểm tra nếu các cột hợp lệ (không phải -1)
+                if (colHisId >= 0 && colUserId >= 0 && colNgayThucHien >= 0 && colDiem >= 0) {
+                    LichSu lichSu = new LichSu(
+                            c.getInt(colHisId),
+                            c.getInt(colUserId),
+                            c.getString(colNgayThucHien),
+                            c.getInt(colDiem)
+                    );
+                    historyList.add(lichSu);
+                }
+            } while (c.moveToNext());
+        }
+
+        c.close();
+        return historyList;
+    }
+
 
     private void valueQues(){
 
@@ -283,6 +334,61 @@ public class Database extends SQLiteOpenHelper {
 
         c.close();
         return dsCauhoi;
+    }
+    public boolean registerUser(String username, String password) {
+        db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("username", username);
+        values.put("password", password);
+
+        long result = db.insert("nguoidung", null, values);
+
+        return result != -1; // Trả về true nếu đăng ký thành công
+    }
+    public int loginUser(String username, String password) {
+        db = getReadableDatabase();
+
+        // Truy vấn để lấy thông tin người dùng
+        String query = "SELECT * FROM nguoidung WHERE username = ? AND password = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{username, password});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            // Kiểm tra xem cột "user_id" có tồn tại không
+            int userIdColumnIndex = cursor.getColumnIndex("user_id");
+            if (userIdColumnIndex != -1) {
+                // Lấy user_id nếu đăng nhập thành công
+                int userId = cursor.getInt(userIdColumnIndex);
+                cursor.close();
+                return userId;  // Trả về user_id
+            } else {
+                // Cột "user_id" không tồn tại
+                cursor.close();
+                return -1;  // Trả về -1 nếu không tìm thấy cột "user_id"
+            }
+        }
+
+        cursor.close();
+        return -1;  // Trả về -1 nếu không tìm thấy người dùng
+    }
+    public void insertHistory(int userId, int score, String date) {
+        db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("user_id", userId);
+        values.put("diem", score);
+        values.put("ngaythuchien", date);
+
+        db.insert("lichsu", null, values);  // Lưu vào bảng lịch sử
+    }
+
+    public boolean isUserExists(String username) {
+        db = getReadableDatabase();
+        String query = "SELECT * FROM nguoidung WHERE username = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{username});
+
+        boolean exists = cursor.getCount() > 0;
+        cursor.close();
+        return exists; // Trả về true nếu tài khoản đã tồn tại
     }
 
 }

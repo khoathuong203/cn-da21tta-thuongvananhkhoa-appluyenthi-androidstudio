@@ -1,5 +1,6 @@
 package com.example.cn_apptracnghiem;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -9,187 +10,241 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 import com.example.cn_apptracnghiem.model.cauhoi;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
 
 public class loadQues extends AppCompatActivity {
 
-    private TextView tv_Num, tv_Ques, tv_Coutdown, tv_Score;
-    private Button btn_Next;
-    private CardView card_answer1, card_answer2, card_answer3, card_answer4;
-    private CountDownTimer timer;
+    private TextView tvTimer, tvQuestionNumber, tvQuestionContent;
+    private CardView cardAnswer1, cardAnswer2, cardAnswer3, cardAnswer4;
+    private Button btnShowQuestionList;
+
     private ArrayList<cauhoi> listCauhoi;
-    private int quesCout, quesSize, Score;
-    private boolean kq;
-    private cauhoi cauhientai;
+    private int currentQuestionIndex = 0;
+    private int score = 0;
+    private int[] userAnswers = new int[40]; // Lưu trữ câu trả lời của người dùng
+    private CountDownTimer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_load_ques);
-        anhxa();
-        Score = 0;
-        tv_Score.setText("Điểm: " + Score);
 
-        Database db = new Database(this);
-        listCauhoi = db.listQues();
-        quesSize = listCauhoi.size();
-        showNextQues();
-
-        btn_Next.setOnClickListener(v -> {
-            if (!kq) {
-                checkAnswer();
+        // Khởi tạo các thành phần giao diện
+        initViews();
+        Arrays.fill(userAnswers, -1);
+        Button btnSubmitExam = findViewById(R.id.btn_submit_exam);
+        Button btnPreviousQuestion = findViewById(R.id.btn_previous_question);
+        btnPreviousQuestion.setOnClickListener(v -> {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--; // Giảm chỉ số câu hỏi
+                showQuestion(); // Hiển thị câu hỏi
             } else {
-                showNextQues();
+                Toast.makeText(this, "Đây là câu hỏi đầu tiên!", Toast.LENGTH_SHORT).show();
             }
         });
+        btnSubmitExam.setOnClickListener(v -> showSubmitConfirmationDialog());
+        // Tải danh sách câu hỏi từ cơ sở dữ liệu
+        Database db = new Database(this);
+        listCauhoi = db.listQues();
+
+        // Hiển thị câu hỏi đầu tiên
+        showQuestion();
+
+        // Bắt đầu bộ đếm thời gian 5 phút
+        startExamTimer(2 * 60 * 1000);
+
+        // Hiển thị danh sách câu hỏi
+        btnShowQuestionList.setOnClickListener(v -> showQuestionList());
+        Button btnNextQuestion = findViewById(R.id.btn_next_question);
+        btnNextQuestion.setOnClickListener(v -> showNextQuestion());
+
+    }
+    private void showNextQuestion() {
+        if (currentQuestionIndex < listCauhoi.size() - 1) {
+            currentQuestionIndex++; // Tăng chỉ số câu hỏi hiện tại
+            showQuestion(); // Hiển thị câu hỏi mới
+        } else {
+            Toast.makeText(this, "Đây là câu hỏi cuối cùng!", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    private void anhxa() {
-        tv_Ques = findViewById(R.id.tv_question_content);
-        tv_Num = findViewById(R.id.tv_question_number);
-        tv_Score = findViewById(R.id.tv_score);
-        tv_Coutdown = findViewById(R.id.tv_timer);
-        btn_Next = findViewById(R.id.btn_next_question);
+    private void initViews() {
+        tvTimer = findViewById(R.id.tv_timer);
+        tvQuestionNumber = findViewById(R.id.tv_question_number);
+        tvQuestionContent = findViewById(R.id.tv_question_content);
+        cardAnswer1 = findViewById(R.id.card_answer1);
+        cardAnswer2 = findViewById(R.id.card_answer2);
+        cardAnswer3 = findViewById(R.id.card_answer3);
+        cardAnswer4 = findViewById(R.id.card_answer4);
+        btnShowQuestionList = findViewById(R.id.btn_show_question_list);
 
-        card_answer1 = findViewById(R.id.card_answer1);
-        card_answer2 = findViewById(R.id.card_answer2);
-        card_answer3 = findViewById(R.id.card_answer3);
-        card_answer4 = findViewById(R.id.card_answer4);
-
-        card_answer1.setOnClickListener(this::onAnswerClick);
-        card_answer2.setOnClickListener(this::onAnswerClick);
-        card_answer3.setOnClickListener(this::onAnswerClick);
-        card_answer4.setOnClickListener(this::onAnswerClick);
+        // Đặt sự kiện click cho các lựa chọn đáp án
+        cardAnswer1.setOnClickListener(this::onAnswerSelected);
+        cardAnswer2.setOnClickListener(this::onAnswerSelected);
+        cardAnswer3.setOnClickListener(this::onAnswerSelected);
+        cardAnswer4.setOnClickListener(this::onAnswerSelected);
     }
 
-    private void showNextQues() {
+    private void showQuestion() {
         resetAnswerCards();
 
-        if (quesCout < quesSize) {
-            cauhientai = listCauhoi.get(quesCout);
+        if (currentQuestionIndex < listCauhoi.size()) {
+            cauhoi question = listCauhoi.get(currentQuestionIndex);
+            tvQuestionNumber.setText("Câu hỏi " + (currentQuestionIndex + 1) + "/40");
+            tvQuestionContent.setText(question.getNoidung());
 
-            tv_Ques.setText(cauhientai.getNoidung());
-            ((TextView) card_answer1.findViewById(R.id.tv_answer1)).setText(cauhientai.getTuychon1());
-            ((TextView) card_answer2.findViewById(R.id.tv_answer2)).setText(cauhientai.getTuychon2());
-            ((TextView) card_answer3.findViewById(R.id.tv_answer3)).setText(cauhientai.getTuychon3());
-            ((TextView) card_answer4.findViewById(R.id.tv_answer4)).setText(cauhientai.getTuychon4());
+            ((TextView) cardAnswer1.findViewById(R.id.tv_answer1)).setText(question.getTuychon1());
+            ((TextView) cardAnswer2.findViewById(R.id.tv_answer2)).setText(question.getTuychon2());
+            ((TextView) cardAnswer3.findViewById(R.id.tv_answer3)).setText(question.getTuychon3());
+            ((TextView) cardAnswer4.findViewById(R.id.tv_answer4)).setText(question.getTuychon4());
 
-            quesCout++;
-            tv_Num.setText("Câu hỏi " + quesCout + "/40");
-            kq = false;
-            btn_Next.setText("Xác nhận");
-            startCountdown();
+            // Nếu người dùng đã trả lời câu này, làm nổi bật câu trả lời đã chọn
+            if (userAnswers[currentQuestionIndex] != -1) {
+                highlightAnswer(userAnswers[currentQuestionIndex]);
+            }
         } else {
-            finishQues();
+            finishExam();
         }
     }
 
-    private void onAnswerClick(View view) {
-        if (kq) return;
-
-        resetAnswerCards();
-        view.setBackgroundColor(Color.LTGRAY);
-        view.setTag("selected");
-    }
-
-    private void checkAnswer() {
-        // Nếu người dùng chưa chọn đáp án, chỉ hiển thị thông báo và không làm gì thêm
-        View selectedCard = findSelectedCard();
-        if (selectedCard == null) {
-            Toast.makeText(this, "Bạn chưa chọn đáp án!", Toast.LENGTH_SHORT).show();
-            return; // Dừng lại, không tiếp tục kiểm tra và cho phép người dùng chọn lại
-        }
-
-        // Nếu đã chọn đáp án, tiếp tục xử lý
-        kq = true;
-        timer.cancel();
-
-        // Lấy câu trả lời từ TextView trong thẻ câu trả lời đã chọn
-        String dapanSelected = "";
-        if (selectedCard == card_answer1) {
-            dapanSelected = ((TextView) selectedCard.findViewById(R.id.tv_answer1)).getText().toString();
-        } else if (selectedCard == card_answer2) {
-            dapanSelected = ((TextView) selectedCard.findViewById(R.id.tv_answer2)).getText().toString();
-        } else if (selectedCard == card_answer3) {
-            dapanSelected = ((TextView) selectedCard.findViewById(R.id.tv_answer3)).getText().toString();
-        } else if (selectedCard == card_answer4) {
-            dapanSelected = ((TextView) selectedCard.findViewById(R.id.tv_answer4)).getText().toString();
-        }
-
-        // Kiểm tra đáp án
-        if (dapanSelected.equals(cauhientai.getDapan())) {
-            Score += 10;
-            tv_Score.setText("Điểm: " + Score);
-            selectedCard.setBackgroundColor(Color.GREEN);
-        } else {
-            selectedCard.setBackgroundColor(Color.RED);
-            showCorrectAnswer();
-        }
-
-        btn_Next.setText("Tiếp theo");
-    }
-
-
-
-    private void showCorrectAnswer() {
-
-        if (cauhientai.getDapan().equals(((TextView) card_answer1.findViewById(R.id.tv_answer1)).getText().toString())) {
-            card_answer1.setBackgroundColor(Color.GREEN);
-        } else if (cauhientai.getDapan().equals(((TextView) card_answer2.findViewById(R.id.tv_answer2)).getText().toString())) {
-            card_answer2.setBackgroundColor(Color.GREEN);
-        } else if (cauhientai.getDapan().equals(((TextView) card_answer3.findViewById(R.id.tv_answer3)).getText().toString())) {
-            card_answer3.setBackgroundColor(Color.GREEN);
-        } else if (cauhientai.getDapan().equals(((TextView) card_answer4.findViewById(R.id.tv_answer4)).getText().toString())) {
-            card_answer4.setBackgroundColor(Color.GREEN);
-        }
-    }
-
-    private void resetAnswerCards() {
-        card_answer1.setBackgroundColor(Color.WHITE);
-        card_answer2.setBackgroundColor(Color.WHITE);
-        card_answer3.setBackgroundColor(Color.WHITE);
-        card_answer4.setBackgroundColor(Color.WHITE);
-        card_answer1.setTag(null);
-        card_answer2.setTag(null);
-        card_answer3.setTag(null);
-        card_answer4.setTag(null);
-    }
-
-    private View findSelectedCard() {
-        if ("selected".equals(card_answer1.getTag())) return card_answer1;
-        if ("selected".equals(card_answer2.getTag())) return card_answer2;
-        if ("selected".equals(card_answer3.getTag())) return card_answer3;
-        if ("selected".equals(card_answer4.getTag())) return card_answer4;
-        return null;
-    }
-
-    private void startCountdown() {
-        timer = new CountDownTimer(60000, 1000) {
+    private void startExamTimer(long totalTime) {
+        timer = new CountDownTimer(totalTime, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                tv_Coutdown.setText(String.format(Locale.getDefault(), "%ds", millisUntilFinished / 1000));
+                long minutes = millisUntilFinished / 1000 / 60;
+                long seconds = millisUntilFinished / 1000 % 60;
+                tvTimer.setText(String.format(Locale.getDefault(), "Thời gian: %02d:%02d", minutes, seconds));
             }
 
             @Override
             public void onFinish() {
-                tv_Coutdown.setText("0s");
-                kq = true;
-                showCorrectAnswer();
-                btn_Next.setText("Tiếp theo");
+                finishExam();
             }
         }.start();
     }
 
-    private void finishQues() {
+    private void onAnswerSelected(View view) {
+        resetAnswerCards();
+
+        // Lưu câu trả lời của người dùng
+        if (view == cardAnswer1) {
+            userAnswers[currentQuestionIndex] = 1;
+        } else if (view == cardAnswer2) {
+            userAnswers[currentQuestionIndex] = 2;
+        } else if (view == cardAnswer3) {
+            userAnswers[currentQuestionIndex] = 3;
+        } else if (view == cardAnswer4) {
+            userAnswers[currentQuestionIndex] = 4;
+        }
+
+        view.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
+    }
+    private void showSubmitConfirmationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Xác nhận");
+        builder.setMessage("Bạn có chắc chắn muốn nộp bài?");
+
+        // Nút xác nhận
+        builder.setPositiveButton("Xác nhận", (dialog, which) -> {
+            finishExam(); // Gọi phương thức tính điểm và chuyển Activity
+        });
+
+        // Nút hủy
+        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
+
+        // Hiển thị hộp thoại
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void resetAnswerCards() {
+        cardAnswer1.setBackgroundColor(getResources().getColor(android.R.color.white));
+        cardAnswer2.setBackgroundColor(getResources().getColor(android.R.color.white));
+        cardAnswer3.setBackgroundColor(getResources().getColor(android.R.color.white));
+        cardAnswer4.setBackgroundColor(getResources().getColor(android.R.color.white));
+    }
+
+
+    private void highlightAnswer(int answerIndex) {
+        switch (answerIndex) {
+            case 1:
+                cardAnswer1.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
+                break;
+            case 2:
+                cardAnswer2.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
+                break;
+            case 3:
+                cardAnswer3.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
+                break;
+            case 4:
+                cardAnswer4.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
+                break;
+        }
+    }
+
+    private void showQuestionList() {
+        String[] questionNumbers = new String[40];
+        for (int i = 0; i < 40; i++) {
+            // Kiểm tra nếu người dùng đã chọn đáp án cho câu hỏi tương ứng
+            if (userAnswers[i] != -1) {
+                questionNumbers[i] = "Câu " + (i + 1) + " (Đã chọn)";
+            } else {
+                questionNumbers[i] = "Câu " + (i + 1);
+            }
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Danh sách câu hỏi");
+        builder.setItems(questionNumbers, (dialog, which) -> {
+            currentQuestionIndex = which; // Cập nhật câu hỏi hiện tại
+            showQuestion(); // Hiển thị câu hỏi được chọn
+        });
+        builder.show();
+    }
+
+
+
+    private void finishExam() {
+        timer.cancel();
+
+        // Tính điểm
+        for (int i = 0; i < listCauhoi.size(); i++) {
+            cauhoi question = listCauhoi.get(i);
+            if (userAnswers[i] != -1) {
+                String selectedAnswer = getAnswerByIndex(i);
+                if (selectedAnswer.equals(question.getDapan())) {
+                    score += 10;
+                }
+            }
+        }
+
+        // Chuyển đến Activity hiển thị kết quả
         Intent intent = new Intent(this, ScoreActivity.class);
-        intent.putExtra("SCORE", Score);
+        intent.putExtra("SCORE", score);
         startActivity(intent);
         finish();
+    }
+
+    private String getAnswerByIndex(int questionIndex) {
+        switch (userAnswers[questionIndex]) {
+            case 1:
+                return listCauhoi.get(questionIndex).getTuychon1();
+            case 2:
+                return listCauhoi.get(questionIndex).getTuychon2();
+            case 3:
+                return listCauhoi.get(questionIndex).getTuychon3();
+            case 4:
+                return listCauhoi.get(questionIndex).getTuychon4();
+            default:
+                return "";
+        }
     }
 }

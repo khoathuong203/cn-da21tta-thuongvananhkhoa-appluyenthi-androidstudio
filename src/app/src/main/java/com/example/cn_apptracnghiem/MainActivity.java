@@ -16,6 +16,8 @@ import androidx.core.view.WindowInsetsCompat;
 public class MainActivity extends AppCompatActivity {
 
     private Button btnStart;
+    private int userId;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,18 +26,16 @@ public class MainActivity extends AppCompatActivity {
 
         btnStart = findViewById(R.id.btn_start_exam); // Đảm bảo ID trong XML trùng với ID trong mã Java
 
+
         // Kiểm tra xem btnStart có null không
         if (btnStart != null) {
             btnStart.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startQuestion();
+                    Intent i = new Intent(MainActivity.this,loadQues.class);
+                    startActivity(i);
                 }
             });
         }
-    }
-    private void startQuestion(){
-        Intent i = new Intent(MainActivity.this,loadQues.class);
-        startActivity(i);
     }
 }

@@ -17,7 +17,7 @@
         android:textSize="32sp"
         android:textStyle="bold"
         android:gravity="center"
-        android:text="Trắc Nghiệm Ôn Thi"
+        android:text="Ôn thi trắc nghiệm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <!-- Giới thiệu cấu trúc đề thi -->
@@ -37,7 +37,7 @@
         android:textColor="@color/black"
         android:textSize="16sp"
         android:lineSpacingExtra="4dp"
-        android:text="• Số câu hỏi: 40\n• Thời gian mỗi câu: 60 giây/câu\n• Nội dung gồm 6 phần:\n  1. Hiểu biết về công nghệ thông tin cơ bản\n  2. Sử dụng máy tính cơ bản\n  3. Xử lý văn bản cơ bản\n  4. Sử dụng bảng tính cơ bản\n  5. Sử dụng trình chiếu cơ bản\n  6. Sử dụng Internet cơ bản."
+        android:text="• Số câu hỏi: 40\n• Thời gian làm: 5 phút\n• Nội dung gồm 6 phần:\n  1. Hiểu biết về công nghệ thông tin cơ bản\n  2. Sử dụng máy tính cơ bản\n  3. Xử lý văn bản cơ bản\n  4. Sử dụng bảng tính cơ bản\n  5. Sử dụng trình chiếu cơ bản\n  6. Sử dụng Internet cơ bản."
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <!-- Nút Bắt đầu -->
