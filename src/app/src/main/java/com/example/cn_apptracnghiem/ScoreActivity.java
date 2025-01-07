@@ -3,7 +3,6 @@ package com.example.cn_apptracnghiem;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -33,11 +32,11 @@ public class ScoreActivity extends AppCompatActivity {
 
         // Nhận điểm số và user_id từ Intent
         Intent intent = getIntent();
-        int score = intent.getIntExtra("SCORE", 0);
+        float score = intent.getFloatExtra("SCORE", 0.0f); // Nhận score là float
         SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         int userId = sharedPreferences.getInt("USER_ID", -1); // Nhận user_id từ Intent
 
-        tvFinalScore.setText("Điểm: " + score);
+        tvFinalScore.setText(String.format(Locale.getDefault(), "Điểm: %.2f", score)); // Định dạng điểm
 
         // Lưu điểm vào bảng lịch sử
         if (userId != -1) {  // Kiểm tra nếu userId hợp lệ
@@ -62,7 +61,7 @@ public class ScoreActivity extends AppCompatActivity {
     }
 
     // Hàm lưu điểm vào bảng lịch sử
-    private void saveScoreToHistory(int userId, int score) {
+    private void saveScoreToHistory(int userId, float score) {
         String date = getCurrentDate(); // Hàm lấy ngày hiện tại
 
         // Lưu điểm vào bảng lịch sử

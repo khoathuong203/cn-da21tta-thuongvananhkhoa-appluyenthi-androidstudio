@@ -3,9 +3,9 @@ public class LichSu {
     private int id_his;
     private int user_id;
     private String ngayThucHien;
-    private int diem;
+    private float diem;
 
-    public LichSu(int id_his, int user_id, String ngayThucHien, int diem) {
+    public LichSu(int id_his, int user_id, String ngayThucHien, float diem) {
         this.id_his = id_his;
         this.user_id = user_id;
         this.ngayThucHien = ngayThucHien;
@@ -36,11 +36,11 @@ public class LichSu {
         this.ngayThucHien = ngayThucHien;
     }
 
-    public int getDiem() {
+    public float getDiem() {
         return diem;
     }
 
-    public void setDiem(int diem) {
+    public void setDiem(float diem) {
         this.diem = diem;
     }
 }

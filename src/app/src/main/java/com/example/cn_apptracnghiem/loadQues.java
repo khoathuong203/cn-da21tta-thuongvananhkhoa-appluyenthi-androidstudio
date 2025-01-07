@@ -28,7 +28,7 @@ public class loadQues extends AppCompatActivity {
 
     private ArrayList<cauhoi> listCauhoi;
     private int currentQuestionIndex = 0;
-    private int score = 0;
+    private float score = 0;
     private int[] userAnswers = new int[40]; // Lưu trữ câu trả lời của người dùng
     private CountDownTimer timer;
 
@@ -210,28 +210,42 @@ public class loadQues extends AppCompatActivity {
         builder.show();
     }
 
-
-
     private void finishExam() {
         timer.cancel();
 
         // Tính điểm
+        float score = 0.0f;
         for (int i = 0; i < listCauhoi.size(); i++) {
             cauhoi question = listCauhoi.get(i);
             if (userAnswers[i] != -1) {
                 String selectedAnswer = getAnswerByIndex(i);
                 if (selectedAnswer.equals(question.getDapan())) {
-                    score += 10;
+                    score += 0.25f; // Mỗi câu đúng +0.25 điểm
                 }
             }
         }
 
+        // Điều chỉnh điểm cuối cùng
+        float fractionalPart = score - (int) score; // Lấy phần thập phân
+        if (fractionalPart == 0.25f || fractionalPart == 0.75f) {
+            score += 0.05f; // Cộng thêm 0.05 điểm nếu phần thập phân là 0.25 hoặc 0.75
+        }
+
         // Chuyển đến Activity hiển thị kết quả
         Intent intent = new Intent(this, ScoreActivity.class);
-        intent.putExtra("SCORE", score);
+        intent.putExtra("SCORE", score); // Truyền điểm dạng float
         startActivity(intent);
         finish();
     }
+    @Override
+    public void onBackPressed() {
+        if (timer != null) {
+            timer.cancel(); // Hủy đồng hồ đếm ngược
+        }
+        super.onBackPressed(); // Gọi hành vi mặc định để trở về Activity trước đó
+    }
+
+
 
     private String getAnswerByIndex(int questionIndex) {
         switch (userAnswers[questionIndex]) {

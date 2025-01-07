@@ -43,23 +43,23 @@ public class Database extends SQLiteOpenHelper {
                 Table.QuestionsTable.phanloai+" INTEGER"
                 +")";
         db.execSQL(QUESTION_TABLE);
+
         final String USER_TABLE = "CREATE TABLE nguoidung(" +
                 "user_id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "username TEXT UNIQUE," +
                 "password TEXT)";
         db.execSQL(USER_TABLE);
+
         final String HISTORY_TABLE = "CREATE TABLE lichsu (" +
-                "id_his INTEGER PRIMARY KEY AUTOINCREMENT, " +  // Sửa tên cột thành id_his
+                "id_his INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "user_id INTEGER, " +
                 "ngaythuchien TEXT, " +
-                "diem INTEGER, " +
+                "diem REAL, " +
                 "FOREIGN KEY(user_id) REFERENCES nguoidung(user_id)" +
                 ")";
-
         db.execSQL(HISTORY_TABLE);
         valueQues();
     }
-
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
@@ -68,7 +68,6 @@ public class Database extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS lichsu");
         onCreate(db);
     }
-
     private void insertQues(cauhoi ques){
         ContentValues values = new ContentValues();
 
@@ -82,7 +81,6 @@ public class Database extends SQLiteOpenHelper {
 
         db.insert(Table.QuestionsTable.TableName,null,values);
     }
-
     public ArrayList<LichSu> getUserHistory(int userId) {
         ArrayList<LichSu> historyList = new ArrayList<>();
         db = getReadableDatabase();
@@ -105,7 +103,7 @@ public class Database extends SQLiteOpenHelper {
                             c.getInt(colHisId),
                             c.getInt(colUserId),
                             c.getString(colNgayThucHien),
-                            c.getInt(colDiem)
+                            c.getFloat(colDiem)
                     );
                     historyList.add(lichSu);
                 }
@@ -115,8 +113,6 @@ public class Database extends SQLiteOpenHelper {
         c.close();
         return historyList;
     }
-
-
     private void valueQues(){
 
         cauhoi c1 = new cauhoi("Hệ điều hành là:", "Phần mềm ứng dụng", "Phần mềm tiện ích", "Phần mềm hệ thống", "Phần mềm ứng dụng và tiện ích", "Phần mềm hệ thống", 1);
@@ -370,7 +366,7 @@ public class Database extends SQLiteOpenHelper {
         cursor.close();
         return -1;  // Trả về -1 nếu không tìm thấy người dùng
     }
-    public void insertHistory(int userId, int score, String date) {
+    public void insertHistory(int userId, float score, String date) {
         db = getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -380,7 +376,6 @@ public class Database extends SQLiteOpenHelper {
 
         db.insert("lichsu", null, values);  // Lưu vào bảng lịch sử
     }
-
     public boolean isUserExists(String username) {
         db = getReadableDatabase();
         String query = "SELECT * FROM nguoidung WHERE username = ?";
